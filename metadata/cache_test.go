@@ -72,7 +72,7 @@ func TestCache_Get(t *testing.T) {
 		&Entry{Metric: "static_metric2", MetricType: textparse.MetricTypeCounter, ValueType: metric_pb.MetricDescriptor_DOUBLE, Help: "help_static2"},
 		&Entry{Metric: "metric_with_override", MetricType: textparse.MetricTypeCounter, ValueType: metric_pb.MetricDescriptor_INT64, Help: "help_metric_override"},
 	}
-	c := NewCache(nil, u, staticMetadata)
+	c := NewCache(nil, u, "recorded_", staticMetadata)
 
 	// First get for the job, we expect an initial batch request.
 	handler = func(qMetric, qMatch string) *apiResponse {
@@ -230,16 +230,25 @@ func TestCache_Get(t *testing.T) {
 	handler = func(qMetric, qMatch string) *apiResponse {
 		return nil
 	}
-	md, err = c.Get(ctx, "prometheus", "localhost:9090", "some:recording:rule")
+	md, err = c.Get(ctx, "prometheus", "localhost:9090", "recorded_some_rule")
 	if err != nil {
 		t.Fatal(err)
 	}
 	want = &Entry{
-		Metric:     "some:recording:rule",
+		Metric:     "recorded_some_rule",
 		MetricType: textparse.MetricTypeGauge,
 	}
 	if !reflect.DeepEqual(md, want) {
 		t.Errorf("expected metadata %v but got %v", want, md)
+	}
+
+	handler = func(qMetric, qMatch string) *apiResponse {
+		return nil
+	}
+
+	md, err = c.Get(ctx, "prometheus", "localhost:9090", "some:recording:rule")
+	if err == nil {
+		t.Fatal(err)
 	}
 }
 
@@ -248,7 +257,7 @@ func TestNewCache(t *testing.T) {
 		&Entry{Metric: "a", Help: "a"},
 		&Entry{Metric: "b", Help: "b"},
 	}
-	c := NewCache(nil, nil, static)
+	c := NewCache(nil, nil, "recorded_", static)
 
 	want := map[string]*Entry{
 		"a": &Entry{Metric: "a", Help: "a"},

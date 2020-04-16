@@ -43,8 +43,8 @@ PROMU_URL     := https://github.com/prometheus/promu/releases/download/v$(PROMU_
 PREFIX                  ?= $(shell pwd)
 BIN_DIR                 ?= $(shell pwd)
 # Private repo.
-DOCKER_IMAGE_NAME       ?= gcr.io/stackdriver-prometheus/stackdriver-prometheus-sidecar
-DOCKER_IMAGE_TAG        ?= $(subst /,-,$(shell git rev-parse --abbrev-ref HEAD))
+DOCKER_IMAGE_NAME       ?= registry.gitlab.com/mambucom/product/sre/release-engineering/selfmanagedservices/tools/stackdriver-prometheus-sidecar
+DOCKER_IMAGE_TAG        ?= 0.7.3-recorded-fix
 
 ifdef DEBUG
 	bindata_flags = -debug
